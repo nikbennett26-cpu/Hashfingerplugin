@@ -5,7 +5,7 @@ Load files exported from Logic, process them, export 32-bit float WAVs back.
 
 ## Build it on your Mac
 1. Install Node.js (https://nodejs.org, the LTS version).
-2. In Terminal:  cd path/to/hashfinger-app
+2. In Terminal:  cd path/to/Hashfingerplugin
 3. npm install
 4. npm start        (runs the app)
 5. npm run dist     (makes dist/Hashfinger-1.0.0-universal.dmg)
