@@ -1,0 +1,34 @@
+{
+  "name": "hashfinger",
+  "productName": "Hashfinger",
+  "version": "1.0.0",
+  "description": "Offline tape, optical compressor, low pass and adaptive limiter for audio files",
+  "author": "Hashfinger",
+  "main": "main.js",
+  "scripts": {
+    "fonts": "node fonts.js",
+    "prestart": "node fonts.js",
+    "start": "electron .",
+    "dist": "node fonts.js && electron-builder --mac --publish never"
+  },
+  "devDependencies": {
+    "electron": "^33.2.0",
+    "electron-builder": "^25.1.8",
+    "@fontsource/oswald": "^5.1.0",
+    "@fontsource/barlow-condensed": "^5.1.0",
+    "@fontsource/share-tech-mono": "^5.1.0",
+    "@fontsource/vt323": "^5.1.0"
+  },
+  "build": {
+    "appId": "com.hashfinger.app",
+    "productName": "Hashfinger",
+    "files": ["main.js", "index.html", "fonts.css", "fonts/**/*"],
+    "mac": {
+      "category": "public.app-category.music",
+      "icon": "icon.png",
+      "identity": null,
+      "target": [{ "target": "dmg", "arch": ["universal"] }]
+    },
+    "dmg": { "title": "Hashfinger" }
+  }
+}
