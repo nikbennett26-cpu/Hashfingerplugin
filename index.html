@@ -273,8 +273,8 @@ class HFOpto extends AudioWorkletProcessor {
     const thr = -2 - p.reduce[0] * 38, R = p.mode[0] > 0.5 ? 12 : 3, knee = 8, slope = 1 - 1 / R;
     const mk = Math.pow(10, p.makeup[0] / 20), mix = p.mix[0];
     const fc = 20 + p.emph[0] * p.emph[0] * 1800, a = 1 - Math.exp(-2 * Math.PI * fc / sr);
-    const ca = 1 - Math.exp(-1 / (0.003 * sr)), cr = 1 - Math.exp(-1 / (0.05 * sr));
-    const fa = 1 - Math.exp(-1 / (0.010 * sr)), fr = 1 - Math.exp(-1 / (0.080 * sr));
+    const ca = 1 - Math.exp(-1 / (0.003 * sr)), cr = 1 - Math.exp(-1 / (0.015 * sr));
+    const fa = 1 - Math.exp(-1 / (0.010 * sr)), fr = 1 - Math.exp(-1 / (0.040 * sr));
     const sa = 1 - Math.exp(-1 / (0.35 * sr)), sr2 = 1 - Math.exp(-1 / (2.0 * sr));
     let gmax = 0;
     for (let i = 0; i < n; i++) {
@@ -287,7 +287,7 @@ class HFOpto extends AudioWorkletProcessor {
       else if (over > -knee / 2) { const q = over + knee / 2; T = (q * q / (2 * knee)) * slope; }
       this.F += (T - this.F) * (T > this.F ? fa : fr);
       this.S += (T - this.S) * (T > this.S ? sa : sr2);
-      const gr = 0.62 * this.F + 0.38 * this.S;
+      const gr = 0.55 * this.F + 0.45 * this.S;
       if (gr > gmax) gmax = gr;
       const g = Math.exp(-gr * 0.1151293) * mk * mix + (1 - mix);
       for (let c = 0; c < nch; c++) out[c][i] = inp[c][i] * g;
@@ -337,7 +337,7 @@ class HFLimiter extends AudioWorkletProcessor {
     const len = inp[0].length, nch = Math.min(inp.length, 2), M = this.M, D = this.D, sr = sampleRate;
     const ceilLin = Math.pow(10, p.ceil[0] / 20), pre = Math.pow(10, (p.ceil[0] - p.thresh[0]) / 20);
     const cd = 1 - Math.exp(-1 / (0.25 * sr));
-    const tauRel = 0.03 + p.adapt[0] * 0.55 * this.dens, cr = 1 - Math.exp(-1 / (tauRel * sr));
+    const tauRel = 0.10 + p.adapt[0] * 0.9 * this.dens, cr = 1 - Math.exp(-1 / (tauRel * sr));
     let gmaxdb = 0;
     for (let i = 0; i < len; i++) {
       let pk = 0;
@@ -1187,7 +1187,8 @@ async function exportLoop() {
     const entries = []; let worst = 0;
     for (let i = 0; i < items.length; i++) {
       const it = items[i], tag = items.length > 1 ? "file " + (i + 1) + "/" + items.length + " · " : "";
-      setStatus("Rendering " + tag + "8x oversampling…");
+      const est = Math.max(1, Math.round(it.buf.duration * it.buf.numberOfChannels * (it.buf.sampleRate / 44100) * 0.12));
+      setStatus("Rendering " + tag + "8x oversampling, about " + est + " s…");
       await new Promise((r) => setTimeout(r, 30));
       const r = await renderMatched(it.buf, (m) => setStatus("Rendering " + tag + m + "…"));
       worst = Math.max(worst, Math.abs(r.err) || 0);
